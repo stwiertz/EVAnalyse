@@ -1,4 +1,4 @@
 
-src/
-
+local/
+*.mp4
 *.pyc
