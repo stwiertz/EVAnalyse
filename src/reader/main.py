@@ -1,7 +1,8 @@
 import cv2
 import time
 from timer.timer import main as timer
-from health.lifebar import main as lifebar
+from players.players import main as players
+from utils.debugger import Debugger
 
 # Mouse callback function
 def click_event(event, x, y, flags, param):
@@ -42,19 +43,24 @@ def main(path):
         if count % framskip != 0:
             #print(f"Frame {count} read successfully")
             continue
-        
+        debugger = Debugger()
+       
         # Timer
         timer_value = timer(frame)
-        
+        debugger.addText(f"Frame {count}: ", coordinates=(32, 745))
         #Frame exporter
-        if count == 2580:
+        if count == 2340:
             output_path = f"./local/picture/frame_{count}_aka_mort.jpg"
             cv2.imwrite(output_path, frame)
             print(f"Frame {count} read successfully")
         
         # Draw rectangle around timer region
-        cv2.rectangle(frame, (32, 730), (391, 733), (0, 255, 0), 2)
+        # cv2.rectangle(frame, (32, 730), (391, 733), (0, 255, 0), 2)
         
+        players(frame, debugger)
+        
+        frame = debugger.addToFrame(frame)
+
         # Resize frame for display
         display_width = int(frame.shape[1] * scale_factor)
         display_height = int(frame.shape[0] * scale_factor)
@@ -64,10 +70,11 @@ def main(path):
         cv2.imshow('Frame', display_frame)
         
         # Press 'q' to exit
-        if cv2.waitKey(10) & 0xFF == ord('q'):
+        if cv2.waitKey(1000) & 0xFF == ord('q'):
             print(f"Exiting... {count} frames processed {timer_value}")
             break
-
+       
+                
         if(count % (framskip * 100) == 100):
             print(f"Frame {count} read successfully")
              
@@ -75,7 +82,7 @@ def main(path):
     end_time = time.time()  # End timing
     elapsed_time = end_time - start_time  # Calculate elapsed time
     print('Count', count)
-    print(f"Time taken by the while loop: {elapsed_time:.2f} seconds")
+    print(f"Time taken by the while loop: {elapsed_time:.2f} seconds for {count/framskip}sec of video, so {(count/framskip)/elapsed_time:.2f} the speed of the video")
 
 
     cap.release()

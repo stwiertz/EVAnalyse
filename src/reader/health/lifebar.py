@@ -8,9 +8,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../.
 from src.reader.utils.hsv_range import get_hsv_range
 from src.reader.utils.color import ORANGE_HSV, BLEU_HSV
 
-def main(frame, yTpl =(732, 735), xTpl=(32, 391), isOrange=True):
+def main(frame, coordinate= ((732, 735), (32, 391)), isOrange=True):
     # Extract lifebar region
-    lifebarFrame = frame[yTpl[0]:yTpl[1], xTpl[0]:xTpl[1]]
+    lifebarFrame = frame[coordinate[0][0]:coordinate[0][1],  coordinate[1][0]:coordinate[1][1]]
     
     # Convert to HSV for better color analysis
     hsv_frame = cv2.cvtColor(lifebarFrame, cv2.COLOR_BGR2HSV)
@@ -19,22 +19,19 @@ def main(frame, yTpl =(732, 735), xTpl=(32, 391), isOrange=True):
     first_row = hsv_frame[1, :]
     
     # Print every 10th value to keep log manageable
-    print("HSV values from right to left (every 10th pixel):")
-    step = int((xTpl[1] - xTpl[0]) / 10)
+    step = int((coordinate[1][1] - coordinate[1][0]) / 10)
     for i, hsv_pixel in enumerate(first_row):
         if i % step == 0 or i ==  len(first_row) - 1:
             h, s, v = hsv_pixel
-            if  (isOrange and 200 < v < 255) or (not isOrange and 0 < v < 200):
-                print(f"{i/step}HP Pixel {i}: H={h}, S={s}, V={v}, IS ALIVE")
-            else:
-                return 0 if isOrange else 100
+            if  not ((isOrange and 190 < v < 255) or (not isOrange and 0 < v < 190)):
+                return i/step * 10 if isOrange else 100 - ( i/step * 10)
     
     
     return 100 if isOrange else 0
 
 if __name__ == "__main__":
     image_path = './local/picture/frame_1.jpg'
-    image_path_2 = './local/picture/frame_2580_aka_mort.jpg'
+    image_path_2 = './local/picture/frame_2340_aka_mort.jpg'
     image = cv2.imread(image_path_2)
     
     if image is None:
