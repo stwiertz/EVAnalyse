@@ -1,16 +1,22 @@
-import easyocr
 import cv2
 import re
+import sys
+import os
+
+# Add the project root to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+
+from src.reader.utils.ocrReader import OCRReader
 
 # Initialize the reader globally
-reader = easyocr.Reader(['en'], gpu=True)  # Enable CUDA by setting gpu=True
 
-def extract_timer(frame):
+
+def main(frame):
     if frame is None:
         raise ValueError("Error: Frame is None.")
     
     timerFrame = frame[0:28, 934:986]
-    results = reader.readtext(timerFrame)
+    results = OCRReader.read_text(timerFrame)
     
     for (_, text, _) in results:
         # Extract only digits from the text
@@ -37,11 +43,6 @@ def extract_timer(frame):
     
     # Default return if no text was found or processed
     return "00.00"
-
-def main(frame):
-    """Process frame and extract timer value"""
-    timer_value = extract_timer(frame)
-    return timer_value
 
 if __name__ == "__main__":
     image_path = './local/picture/frame_1.jpg'

@@ -1,12 +1,5 @@
 import cv2
-import numpy as np
-import sys
-import os
 
-# Add the project root to the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-from src.reader.utils.hsv_range import get_hsv_range
-from src.reader.utils.color import ORANGE_HSV, BLEU_HSV
 
 def main(frame, coordinate= ((732, 735), (32, 391)), isOrange=True):
     # Extract lifebar region
