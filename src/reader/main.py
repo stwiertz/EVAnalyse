@@ -31,24 +31,25 @@ def main(path):
     cv2.setMouseCallback('Frame', click_event, param)
 
     count = 0
-    framskip = 60
+    framskip = 60  # Number of frames to skip
     start_time = time.time()
-    sec = 0
+
     while True:
+        # Set the video capture to the desired frame
+        cap.set(cv2.CAP_PROP_POS_FRAMES, count)
+
         ret, frame = cap.read()
-        count += 1
         if not ret:
             print("End of video or error reading frame.")
             break
-        if count % framskip != 0:
-            #print(f"Frame {count} read successfully")
-            continue
+
         debugger = Debugger()
-       
+
         # Timer
         timer_value = timer(frame)
         debugger.addText(f"Frame {count}: ", coordinates=(32, 745))
-        #Frame exporter
+
+        # Frame exporter
         if count == 2340:
             output_path = f"./local/picture/frame_{count}_aka_mort.jpg"
             cv2.imwrite(output_path, frame)
@@ -73,17 +74,14 @@ def main(path):
         if cv2.waitKey(1000) & 0xFF == ord('q'):
             print(f"Exiting... {count} frames processed {timer_value}")
             break
-       
-                
-        if(count % (framskip * 100) == 100):
-            print(f"Frame {count} read successfully")
-             
-    
+
+        # Increment the frame count by the frame skip value
+        count += framskip
+
     end_time = time.time()  # End timing
     elapsed_time = end_time - start_time  # Calculate elapsed time
     print('Count', count)
     print(f"Time taken by the while loop: {elapsed_time:.2f} seconds for {count/framskip}sec of video, so {(count/framskip)/elapsed_time:.2f} the speed of the video")
-
 
     cap.release()
     cv2.destroyAllWindows()
